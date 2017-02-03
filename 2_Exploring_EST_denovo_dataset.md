@@ -51,7 +51,7 @@ EST_all <- read.delim("Input_Data/T.oceanica_annotation_denovo_2015.txt")
 
 EST_small <- EST_all %>% 
   select(1:9) %>% 
-  rename(transcript = orf_id, ref_gene=ref_gene_id, ref_genome = ref_genome_id)
+  rename(transcript = orf_id, ref_gene=ref_gene_id, ref_scaffold = ref_genome_id)
 
 
 names(EST_small)
@@ -59,12 +59,58 @@ names(EST_small)
 
 ```
 ## [1] "transcript"         "orig.orf_id_row."   "hitting"           
-## [4] "ref_gene"           "ref_genome"         "ref_genome_start"  
+## [4] "ref_gene"           "ref_scaffold"       "ref_genome_start"  
 ## [7] "ref_genome_end"     "orf_contam_type"    "AnnotationCombined"
 ```
-####Now I owuld like to have a summary of each column
+####Now I would like to have a summary of each column
 
 
+```r
+#counts the number of disinct values in each variable
+(summary_EST <- EST_small %>% 
+  summarise_each(funs(n_distinct)))
+```
 
+```
+##   transcript orig.orf_id_row. hitting ref_gene ref_scaffold
+## 1     145068           145068       4    21705        18052
+##   ref_genome_start ref_genome_end orf_contam_type AnnotationCombined
+## 1            12265          12983             616              21988
+```
 
+```r
+summary_gene <- EST_small %>% 
+  group_by(ref_gene) %>% 
+  summarise(n()) %>% 
+  rename(count = `n()` ) %>% 
+  arrange(desc(count))
 
+(head(summary_gene))
+```
+
+```
+## # A tibble: 6 × 2
+##      ref_gene count
+##        <fctr> <int>
+## 1             62602
+## 2 THAOC_35840   757
+## 3 THAOC_26229   496
+## 4 THAOC_10148   442
+## 5 THAOC_17662   408
+## 6 THAOC_07365   374
+```
+
+Lets have a closer look at [THAOC_35840](https://www.ncbi.nlm.nih.gov/protein/397567357).
+
+As per NCBI, this gene is putatively a "sterol regulatory element-binding protein, partial". It is hit by 757 transcripts
+
+```r
+THAOC_35840 <- EST_small %>% 
+  filter(ref_gene == "THAOC_35840")
+```
+
+So, the transcript_pool for THAOC_35840 consiste of `length(unique(THAOC_35840$transcript ))` trancripts.
+
+As mentioned above, the state of the officially available TO genome is still in the scaffold phase. And the scaffolds harbouring usually 1-2 predicted proteins only. When we look at our data, we see in the summary, that the transcripts hit `summary_EST[1,4]` ref_genes and `summary_EST[1,5]` reference scaffolds.
+
+When we look our THAOC_35840 transcript pool, they all hit the same reference gene, but when we look at the scaffolds, they hit combined `length(unique(THAOC_35840$ref_scaffold ))`. How can this be?
