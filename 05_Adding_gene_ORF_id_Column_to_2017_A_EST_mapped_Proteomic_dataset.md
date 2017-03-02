@@ -69,19 +69,47 @@ TO03_ProteinIDs_info_comb <- unite(TO03_ProteinIDs_info_comb, together, c(gene_O
 
 #now I would like to remove NAs
 TO03_ProteinIDs_info_comb$together <- gsub("NA;", "", TO03_ProteinIDs_info_comb$together)
+TO03_ProteinIDs_info_comb$together <- trimws(TO03_ProteinIDs_info_comb$together, which = "both")
+
+#TO03_ProteinIDs_info_comb <- TO03_ProteinIDs_info_comb %>% 
+#  mutate(gene_ORF_id = str_extract(together, "^THAOC_\\d{5}"))
 
 TO03_ProteinIDs_info_comb <- TO03_ProteinIDs_info_comb %>% 
-  mutate(gene_ORF_id = str_extract(together, "^THAOC_\\d{5}"))
+  mutate(gene_ORF_id_try = str_extract(together, "^.{4,27};"))
+#this will lead to psbA etc and THAOC together
+#so I will need to separate this column with using Sep=";"
+TO03_ProteinIDs_info_comb <- separate(TO03_ProteinIDs_info_comb, gene_ORF_id_try, c("gene_ORF_id", "extra_1", "extra_2"), sep = ";")
+```
 
-TO03_ProteinIDs_info_comb <- TO03_ProteinIDs_info_comb %>% 
-  mutate(gene_ORF_id = str_extract(together, "^.{4,27};"))
+```
+## Warning: Too few values at 1236 locations: 1, 2, 3, 4, 5, 6, 7, 8, 9, 11,
+## 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, ...
+```
 
-#now I would like to remove ;
-TO03_ProteinIDs_info_comb$gene_ORF_id <- gsub(";", "", TO03_ProteinIDs_info_comb$gene_ORF_id)
+```r
+#now I would like to remove ";" - not needed anymore
+#TO03_ProteinIDs_info_comb$gene_ORF_id <- gsub(";", "", TO03_ProteinIDs_info_comb$gene_ORF_id)
+
+#and removing whitespaces
+TO03_ProteinIDs_info_comb$gene_ORF_id <- trimws(TO03_ProteinIDs_info_comb$gene_ORF_id, which = "both") #leading white space "left" trailing white space "right"
+
 
 
 write.table(TO03_ProteinIDs_info_comb, "Output_Data/2017_A_TO03_proteomics_gene_ORF_ids_forMaster.txt", sep="\t", row.names = FALSE, col.names = TRUE)
+
+kable(head(TO03_ProteinIDs_info_comb), format = "markdown")
 ```
+
+
+
+| original_row|Protein.IDs                                                                         |together               |THAOC |PS_start |PS_middle |Rib |contig                |gene_ORF_id           |extra_1 |extra_2 |
+|------------:|:-----------------------------------------------------------------------------------|:----------------------|:-----|:--------|:---------|:---|:---------------------|:---------------------|:-------|:-------|
+|            1|atpAADB27547.1ATPsynthaseCF1subunitalpha;contig_46002_1_294_+;contig_119588_1_338_+ |atpA;                  |NA    |atpA     |NA        |NA  |NA                    |atpA                  |        |NA      |
+|            2|atpFADB27545.1ATPsynthaseCF0subunitIBchain                                          |atpF;                  |NA    |atpF     |NA        |NA  |NA                    |atpF                  |        |NA      |
+|            7|contig_100473_1_208_+;contig_110443_1_287_-                                         |contig_100473_1_208_+; |NA    |NA       |NA        |NA  |contig_100473_1_208_+ |contig_100473_1_208_+ |        |NA      |
+|            8|contig_101299_1_202_+                                                               |contig_101299_1_202_+; |NA    |NA       |NA        |NA  |contig_101299_1_202_+ |contig_101299_1_202_+ |        |NA      |
+|            9|contig_102546_1_216_-                                                               |contig_102546_1_216_-; |NA    |NA       |NA        |NA  |contig_102546_1_216_- |contig_102546_1_216_- |        |NA      |
+|           10|contig_103488_1_207_+;contig_120062_1_241_+                                         |contig_103488_1_207_+; |NA    |NA       |NA        |NA  |contig_103488_1_207_+ |contig_103488_1_207_+ |        |NA      |
 
 <a id="TO1005"></a>
 
@@ -114,19 +142,47 @@ TO05_ProteinIDs_info_comb <- unite(TO05_ProteinIDs_info_comb, together, c(gene_O
 
 #now I would like to remove NAs
 TO05_ProteinIDs_info_comb$together <- gsub("NA;", "", TO05_ProteinIDs_info_comb$together)
+TO05_ProteinIDs_info_comb$together <- trimws(TO05_ProteinIDs_info_comb$together, which = "both")
+
+#TO05_ProteinIDs_info_comb <- TO05_ProteinIDs_info_comb %>% 
+#  mutate(gene_ORF_id = str_extract(together, "^THAOC_\\d{5}"))
 
 TO05_ProteinIDs_info_comb <- TO05_ProteinIDs_info_comb %>% 
-  mutate(gene_ORF_id = str_extract(together, "^THAOC_\\d{5}"))
+  mutate(gene_ORF_id_try = str_extract(together, "^.{4,27};"))
+#this will lead to psbA etc and THAOC together
+#so I will need to separate this column with using Sep=";"
+TO05_ProteinIDs_info_comb <- separate(TO05_ProteinIDs_info_comb, gene_ORF_id_try, c("gene_ORF_id", "extra_1", "extra_2"), sep = ";")
+```
 
-TO05_ProteinIDs_info_comb <- TO05_ProteinIDs_info_comb %>% 
-  mutate(gene_ORF_id = str_extract(together, "^.{4,27};"))
+```
+## Warning: Too few values at 2472 locations: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+## 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, ...
+```
 
-#now I would like to remove ;
-TO05_ProteinIDs_info_comb$gene_ORF_id <- gsub(";", "", TO05_ProteinIDs_info_comb$gene_ORF_id)
+```r
+#now I would like to remove ";" - not needed anymore
+#TO05_ProteinIDs_info_comb$gene_ORF_id <- gsub(";", "", TO05_ProteinIDs_info_comb$gene_ORF_id)
+
+#and removing whitespaces
+TO05_ProteinIDs_info_comb$gene_ORF_id <- trimws(TO05_ProteinIDs_info_comb$gene_ORF_id, which = "both") #leading white space "left" trailing white space "right"
+
 
 
 write.table(TO05_ProteinIDs_info_comb, "Output_Data/2017_A_TO05_proteomics_gene_ORF_ids_forMaster.txt", sep="\t", row.names = FALSE, col.names = TRUE)
+
+kable(head(TO05_ProteinIDs_info_comb), format = "markdown")
 ```
+
+
+
+| original_row|Protein.IDs                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |together                             |THAOC       |PS_start |PS_middle |Rib |contig                 |gene_ORF_id           |extra_1 |extra_2 |
+|------------:|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------------------------|:-----------|:--------|:---------|:---|:----------------------|:---------------------|:-------|:-------|
+|            1|atpAADB27547.1ATPsynthaseCF1subunitalpha                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |atpA;                                |NA          |atpA     |NA        |NA  |NA                     |atpA                  |        |NA      |
+|            2|atpFADB27545.1ATPsynthaseCF0subunitIBchain                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |atpF;                                |NA          |atpF     |NA        |NA  |NA                     |atpF                  |        |NA      |
+|            9|contig_100071_60_204_-;contig_83969_1_154_+;contig_99757_91_200_-;contig_90515_98_207_-;contig_96649_1_131_+;contig_85924_210_344_-;contig_107383_1_132_+;contig_95379_79_219_-;contig_85911_51_200_-;contig_87982_50_203_-;contig_99688_63_216_-;contig_86910_62_215_-;contig_80773_63_216_-;contig_78821_50_216_-;contig_94062_28_205_-;contig_76920_31_207_-;contig_74862_27_207_-;contig_96797_38_225_-;contig_86128_38_225_-;contig_80567_38_225_-;contig_106363_1_200_-;contig_89761_1_201_-;contig_115461_1_200_+;contig_104579_1_202_+;contig_86514_1_203_-;contig_81818_1_203_+;contig_121266_1_217_+;contig_113607_1_222_-;contig_130909_1_231_-;contig_70370_8_407_-;THAOC_17785EJK61682.1hypotheticalprotein |THAOC_17785; contig_100071_60_204_-; |THAOC_17785 |NA       |NA        |NA  |contig_100071_60_204_- |THAOC_17785           |        |NA      |
+|           10|contig_100119_1_202_-;contig_106652_1_211_+;THAOC_25974EJK54403.1hypotheticalprotein                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |THAOC_25974; contig_100119_1_202_-;  |THAOC_25974 |NA       |NA        |NA  |contig_100119_1_202_-  |THAOC_25974           |        |NA      |
+|           11|contig_100206_1_201_+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |contig_100206_1_201_+;               |NA          |NA       |NA        |NA  |contig_100206_1_201_+  |contig_100206_1_201_+ |        |NA      |
+|           12|contig_102056_1_211_-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |contig_102056_1_211_-;               |NA          |NA       |NA        |NA  |contig_102056_1_211_-  |contig_102056_1_211_- |        |NA      |
 
 
 ```r
@@ -150,8 +206,8 @@ kable(Sum_Table, format="markdown")
 
 |strain | original_row| together| chloroplast| ribosome| THAOC| contig| gene_ORF_id|
 |:------|------------:|--------:|-----------:|--------:|-----:|------:|-----------:|
-|TO03   |         1244|     1244|          31|       21|   936|    727|        1224|
-|TO05   |         2480|     2480|          38|       31|  1883|   1380|        2430|
+|TO03   |         1244|     1244|          31|       21|   936|    727|        1244|
+|TO05   |         2480|     2480|          38|       31|  1883|   1380|        2480|
 
 ```r
 write.table(Sum_Table,"Output_Data/2017_A_TO03_TO05_geneORF_id_Count_Table.txt", sep="\t", row.names = FALSE, col.names = TRUE)
