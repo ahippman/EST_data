@@ -1,4 +1,4 @@
-# 2017_allEST_TO03_Master filtering contigs
+# 2017_A_allEST_TO03_Master filtering contigs
 Anna A. Hippmann  
 February 24, 2017  
 
@@ -72,7 +72,7 @@ and this is the summary of what I found out:
 
 
 ```r
-TO03 <- read.delim("Input_Data/2017_allEST_TO03_Master.txt")
+TO03 <- read.delim("Input_Data/2017_allEST_TO03_Master.txt") #2017_01_TO03_Master using all ESTs and TO05 genome to be mapped
 
 ESTs <- read.delim("Input_Data/T.oceanica_annotation_denovo_2015_04.txt")
 
@@ -98,7 +98,7 @@ TO03_ratio_narrow_info <- TO03_ratio_narrow %>%
   mutate (PS = str_extract(Protein.IDs, ";[a-z]{3}[A-Z]")) %>%  #deposits those on chloroplast genome e.g. PSI, PSII, ATP
   mutate (Rib = str_extract(Protein.IDs, ";rp[l,s]\\d")) %>% #RegEx to find ribosonmal proteins
   mutate (contig = str_extract(Protein.IDs,"^contig_")) %>% #getting all that START with a contig (as best hits)
-  mutate (orf_id = str_extract(Protein.IDs, "^contig_\\d{1,6}_\\d{1,5}_\\d{2,5}_\\-|^contig_\\d{1,6}_\\d{1,5}_\\d{2,5}_\\+"))
+  mutate (orf_id = str_extract(Protein.IDs, "^contig_\\d{1,6}_\\d{1,5}_\\d{2,5}_\\-|^contig_\\d{1,6}_\\d{1,5}_\\d{2,5}_\\+")) #getting all that START with a contig (as best hits) and depositing the actual contig identifyer into new variable
 
 
 TO03_only_contigs <-TO03_ratio_narrow_info %>% 
