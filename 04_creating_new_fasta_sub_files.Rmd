@@ -1,0 +1,143 @@
+---
+title: "Reading In Fasta File"
+author: "Anna A. Hippmann"
+date: "February 27, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r libraries, echo=TRUE}
+suppressPackageStartupMessages(library(dplyr)) # to help manipulating the data
+suppressPackageStartupMessages(library(readr))      # to help loading the data 
+suppressPackageStartupMessages(library(ggplot2))    # to help plotting the data
+suppressPackageStartupMessages(library(gridExtra))  # to help plotting multiplot plots
+suppressPackageStartupMessages(library(knitr))
+suppressPackageStartupMessages(library(VennDiagram))
+suppressPackageStartupMessages(library(tidyr))
+suppressPackageStartupMessages(library(stringr))
+#suppressPackageStartupMessages(library(seqinr))
+
+library("seqRFLP")
+
+```
+
+I would like to create a fasta file with only the contigs involved that do not hit the gene ORFs, but only thos that hit 
+
+1) other regions of the genome scaffolds
+2) do not map to any region on the genome scaffolds at all
+
+For htis I will first load the original contig fasta file.
+Then I will load the contgi information with where they are hitting
+then I will subset the fasta file to thos hitting the respective areas of the genome
+
+then I will send that new fasta to Jenny
+
+I got the small script to read in FASTA file as data frame from a post [here](https://www.researchgate.net/post/Converting_a_fasta_file_to_a_tab-delimited_file10) from [Pierre Tocquin](http://www.phytosystems.ulg.ac.be/en/groups/plant-physiology/members/pierre-tocquin)
+
+```{r files created 01, eval=FALSE}
+
+input <- read_lines(file = "Input_Data/Tocean.assembly.fa") 
+output <- file("output.csv","w")
+
+currentSeq <- 0
+newLine <- 0
+
+for(i in 1:length(input)) {
+  if(strtrim(input[i], 1) == ">") {
+    if(currentSeq == 0) {
+      writeLines(paste(input[i],"\t"), output, sep="")
+      currentSeq <- currentSeq + 1
+    } else {
+      writeLines(paste("\n",input[i],"\t", sep =""), output, sep="")
+    }
+  } else {
+    writeLines(paste(input[i]), output, sep="")
+  }
+}
+
+close(output)
+
+contigs <- read.delim("Output.csv", header = FALSE)
+```
+
+```{r files used}
+
+contigs <- read.delim ("Input_Data/contig_fasta_all.csv", header=FALSE)
+contigs <- contigs %>% 
+  rename (orf_id = V1, seq = V2)
+
+contig_info <- read.delim("Input_Data/T.oceanica_annotation_denovo_2015_04.txt")
+
+contig_info_slim <- contig_info %>% 
+  select(orf_id, hitting) %>% 
+  mutate(per = ">")
+
+contig_info_slim$orf_id <- as.character(contig_info_slim$orf_id)
+                                        
+ contig_info_slim <-    unite(contig_info_slim, temp, per,orf_id, sep = "")  
+   
+ contig_info_slim <- contig_info_slim %>% 
+   rename(orf_id = temp) 
+
+ 
+
+```
+
+###Subsetting the fasta file
+and [here](https://www.rdocumentation.org/packages/seqRFLP/versions/1.0.1/topics/dataframe2fas) is the documentation on how to save a dataframe to fasta file
+
+```{r subsetting contig fasta file}
+
+#contig_info_slim <-   separate(contig_info_slim, orf_id, c("sign", "orf_id"), sep = 1) 
+ # test <- select(contig_info_slim, -sign)
+
+
+contig_notMapped <- contig_info_slim %>% 
+  filter(hitting == "NOTmapped")
+
+contig_Chloroplast <- contig_info_slim %>% 
+  filter(hitting == "Chloroplast")
+
+contig_RefGene <- contig_info_slim %>% 
+  filter(hitting == "RefGene")
+
+contig_onGenome <- contig_info_slim %>% 
+  filter(hitting == "onGenome")
+
+
+Fasta_notmapped <- semi_join(contigs, contig_notMapped, by = "orf_id")
+
+Fasta_onGenome <- semi_join(contigs, contig_onGenome, by = "orf_id")
+
+Fasta_Chloroplast <- semi_join(contigs, contig_Chloroplast, by = "orf_id")
+
+Fasta_RefGene <- semi_join(contigs, contig_RefGene, by = "orf_id")
+
+Fasta_notORF <- bind_rows(Fasta_notmapped, Fasta_onGenome)
+
+
+
+
+a <- dataframe2fas(Fasta_Chloroplast, file="Output_Data/FASTA/contigs_Chloroplast.fa")
+
+b <- dataframe2fas(Fasta_notmapped, file="Output_Data/FASTA/contigs_notmapped.fa")
+c <- dataframe2fas(Fasta_onGenome, file="Output_Data/FASTA/contigs_onGenome.fa")
+d <- dataframe2fas(Fasta_RefGene, file="Output_Data/FASTA/contigs_RefGene.fa")
+e <- dataframe2fas(Fasta_notORF, file="Output_Data/FASTA/contigs_notORF.fa")
+
+    
+
+  
+
+table <- contig_info_slim %>% 
+         group_by(hitting) %>% 
+         summarize(n())
+
+kable(table, format="markdown")
+
+```
+
