@@ -49,10 +49,20 @@ suppressPackageStartupMessages(library(tidyr))
 suppressPackageStartupMessages(library(stringr))
 ```
 
-and this is the summary of what I found out:
+and this is the summary of what I found out (note, re-search 1 is the one from February, re-search 2 is the current March one in whcih the original Mascot software has been used):
 
 
 
+|category                       |re.search.1 |X..1 |re.search..1 |X...1 |re.search.2 |X..2 |re.search..2 |X...2 |
+|:------------------------------|:-----------|:----|:------------|:-----|:-----------|:----|:------------|:-----|
+|                               |TO03        |     |TO05         |      |TO03        |     |TO05         |      |
+|Protein_id                     |1244        |100% |2480         |100%  |1168        |100% |2448         |100%  |
+|Protein_id + ratio             |562         |45%  |2057         |83%   |1005        |86%  |2049         |84%   |
+|Protein_id contig only + ratio |74          |6%   |391          |16%   |184         |16%  |382          |16%   |
+|contig only - Chloroplast      |2           |3%   |1            |0%    |2           |1%   |1            |0%    |
+|contig only - not mapped       |5           |7%   |28           |7%    |18          |10%  |31           |8%    |
+|contig only - on genome        |17          |23%  |91           |23%   |32          |17%  |92           |24%   |
+|contig only - Ref gene         |50          |68%  |271          |69%   |132         |72%  |258          |68%   |
 
 
 <a id="TO1003"></a>
